@@ -37,3 +37,35 @@ img {
 }
 
 /* Normalize end */
+
+body {
+  padding: 20px;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-left: 20px;
+}
+
+.item-class-section-header {
+  display: flex;
+}
+
+.section-fields fieldset {
+  display: flex;
+  border: none;
+}
+.section-fields legend {
+  display: inline;
+}
+
+.options-container {
+  display: inline-flex;
+  gap: 20px;
+}

@@ -1,13 +1,6 @@
 import "./styles.css";
-import defaultRules from "./Rule.js";
+import * as formUtils from "./RuleForm.js";
 
-const rules = defaultRules;
-const body = document.querySelector("pre");
-const allRules = rules.reduce((acc, rule) => {
-  if (rule.forItemClass === null) {
-    return acc;
-  }
-  return acc + rule.print();
-}, "");
-body.textContent = allRules;
+formUtils.init();
+
 console.log("hello");

@@ -1,10 +1,12 @@
 import getItemClass from "./ItemClass.js";
 import { filterFactory } from "./Filter.js";
 class Rule {
+  category;
   forItemClass;
   filter;
 
-  constructor(forItemClass, filter) {
+  constructor(category, forItemClass, filter) {
+    this.category = category;
     this.forItemClass = forItemClass;
     this.filter = filter;
   }
@@ -25,17 +27,23 @@ const defaultRules = [];
 
 defaultRules.push(
   new Rule(
+    "Weapons",
     getItemClass("Two Hand Maces"),
     filterFactory.createDropLevelFilter(67),
   ),
 );
 
 defaultRules.push(
-  new Rule(getItemClass("Bows"), filterFactory.createDropLevelFilter(72)),
+  new Rule(
+    "Weapons",
+    getItemClass("Bows"),
+    filterFactory.createDropLevelFilter(72),
+  ),
 );
 
 defaultRules.push(
   new Rule(
+    "Weapons",
     getItemClass("Crossbows"),
     filterFactory.createBaseTypeFilter([
       "Expert Bombard Crossbow",
@@ -46,6 +54,7 @@ defaultRules.push(
 
 defaultRules.push(
   new Rule(
+    "Defences",
     getItemClass("Helmets", {
       hasArmour: true,
       hasEvasion: false,
@@ -57,6 +66,7 @@ defaultRules.push(
 
 defaultRules.push(
   new Rule(
+    "Defences",
     getItemClass("Helmets", {
       hasES: true,
       hasArmour: false,
@@ -66,4 +76,4 @@ defaultRules.push(
   ),
 );
 
-export default defaultRules;
+export { Rule, defaultRules };
