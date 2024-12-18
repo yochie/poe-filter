@@ -162,6 +162,10 @@ function createItemClassSection(itemClass) {
   const sectionFields = document.createElement("div");
   sectionFields.classList.add("section-fields");
 
+  //Hardcoded fields here
+  //should find way to respect open closed principle
+  //not sure how to go about this without bloating the rule class
+  //some pattern has to apply...
   const levelFieldID = `level-cutoff-${sectionID}`;
   const baseFieldID = `bases-${sectionID}`;
   createFilterTypeFieldset(sectionFields, sectionID, levelFieldID, baseFieldID);
