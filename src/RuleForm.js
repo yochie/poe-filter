@@ -41,14 +41,15 @@ function generateFields(rules) {
   }
 }
 
-function createItemClassSection(itemClass) {
-  const section = document.createElement("div");
-
+function createSectionHeader(itemClass, section) {
   const sectionHeader = document.createElement("div");
   sectionHeader.classList.add("item-class-section-header");
 
   const sectionEnabledCheckbox = document.createElement("input");
   sectionEnabledCheckbox.type = "checkbox";
+  sectionEnabledCheckbox.addEventListener("change", () =>
+    enableSection(section, sectionEnabledCheckbox.checked),
+  );
   sectionHeader.appendChild(sectionEnabledCheckbox);
 
   const title = document.createElement("h3");
@@ -56,55 +57,122 @@ function createItemClassSection(itemClass) {
   sectionHeader.appendChild(title);
 
   section.appendChild(sectionHeader);
+}
 
-  const sectionFields = document.createElement("div");
-  sectionFields.classList.add("section-fields");
+function createFilterTypeOptions(
+  fieldset,
+  sectionID,
+  optionID,
+  optionLabel,
+  enablesID,
+) {
+  const input = document.createElement("input");
+  const fieldID = `${optionID}-${sectionID}`;
+  input.type = "radio";
+  input.name = "filter";
+  input.value = optionID;
+  input.id = fieldID;
+  input.setAttribute("data-enables-field", enablesID);
+  fieldset.appendChild(input);
 
-  //todo : hardcoded for field types, not respecting open-closed
-  // need to find solution that doesnt require defining everything inside item class definition
-  // maybe decorator pattern??
-  const filterTypeFieldSet = document.createElement("fieldset");
+  const label = document.createElement("label");
+  label.textContent = optionLabel;
+  label.setAttribute("for", fieldID);
+  fieldset.appendChild(label);
+}
+
+function createLevelField(container, fieldID) {
+  const wrapper = document.createElement("div");
+  const fieldset = document.createElement("fieldset");
+  fieldset.classList.add("level-filter");
+
+  const levelFilterID = fieldID;
+  const label = document.createElement("label");
+  label.textContent = "Cutoff level";
+  label.setAttribute("for", levelFilterID);
+  fieldset.appendChild(label);
+
+  const input = document.createElement("input");
+  input.type = "number";
+  input.setAttribute("id", levelFilterID);
+  fieldset.appendChild(input);
+  wrapper.appendChild(fieldset);
+  container.appendChild(wrapper);
+}
+
+function createBaseField(container, fieldID) {
+  const wrapper = document.createElement("div");
+  const fieldset = document.createElement("fieldset");
+  fieldset.classList.add("base-filter");
+
+  const label = document.createElement("label");
+  label.textContent = "Base Types";
+  label.setAttribute("for", fieldID);
+  fieldset.appendChild(label);
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.setAttribute("id", fieldID);
+  fieldset.appendChild(input);
+  wrapper.appendChild(fieldset);
+  container.appendChild(wrapper);
+}
+
+//todo : currently hardcoded for field types, not respecting open-closed
+// need to find solution that doesnt require defining everything inside item class definition
+function createFilterTypeFieldset(
+  container,
+  sectionID,
+  levelFieldID,
+  baseFieldID,
+) {
+  const filterTypeFieldset = document.createElement("fieldset");
+  filterTypeFieldset.classList.add("filter-type-field");
 
   const legend = document.createElement("legend");
-  legend.textContent = "Type";
-  legend.style.display = "none";
-  filterTypeFieldSet.appendChild(legend);
+  legend.textContent = "Filter Type";
+  filterTypeFieldset.appendChild(legend);
 
   const optionsContainer = document.createElement("div");
   optionsContainer.classList.add("options-container");
+  createFilterTypeOptions(
+    optionsContainer,
+    sectionID,
+    "level",
+    "Drop Level",
+    levelFieldID,
+  );
+  createFilterTypeOptions(
+    optionsContainer,
+    sectionID,
+    "base-type",
+    "Base Type",
+    baseFieldID,
+  );
+  filterTypeFieldset.appendChild(optionsContainer);
 
-  const levelType = document.createElement("input");
-  levelType.type = "radio";
-  levelType.name = "filter";
-  levelType.value = "dropLevel";
-  levelType.id = `drop-level-${itemClass.name.replace(/\s/g, "-")}`;
-  optionsContainer.appendChild(levelType);
+  container.appendChild(filterTypeFieldset);
+}
 
-  const levelTypeLabel = document.createElement("label");
-  levelTypeLabel.textContent = "Drop level";
-  levelTypeLabel.setAttribute("for", levelType.id);
-  optionsContainer.appendChild(levelTypeLabel);
+function createItemClassSection(itemClass) {
+  const section = document.createElement("div");
+  const sectionID = itemClass.name.replace(/\s/g, "-");
 
-  const baseType = document.createElement("input");
-  baseType.type = "radio";
-  baseType.name = "filter";
-  baseType.value = "baseType";
-  baseType.id = `base-type-${itemClass.name.replace(/\s/g, "-")}`;
-  optionsContainer.appendChild(baseType);
+  createSectionHeader(itemClass, section);
+  const sectionFields = document.createElement("div");
+  sectionFields.classList.add("section-fields");
 
-  const baseTypeLabel = document.createElement("label");
-  baseTypeLabel.textContent = "Base type";
-  baseTypeLabel.setAttribute("for", baseType.id);
-  optionsContainer.appendChild(baseTypeLabel);
+  const levelFieldID = `level-cutoff-${sectionID}`;
+  const baseFieldID = `bases-${sectionID}`;
+  createFilterTypeFieldset(sectionFields, sectionID, levelFieldID, baseFieldID);
 
-  filterTypeFieldSet.appendChild(optionsContainer);
-  sectionFields.appendChild(filterTypeFieldSet);
-
+  const toggledFields = document.createElement("div");
+  toggledFields.classList.add("toggled-fields");
+  createLevelField(toggledFields, levelFieldID);
+  createBaseField(toggledFields, baseFieldID);
+  sectionFields.appendChild(toggledFields);
   section.appendChild(sectionFields);
 
-  sectionEnabledCheckbox.addEventListener("change", () =>
-    enableSection(section, sectionEnabledCheckbox.checked),
-  );
   return section;
 }
 
@@ -129,6 +197,25 @@ function init() {
   //todo: load from save if it exists
   load(defaultRules);
 
+  form.addEventListener("change", (e) => {
+    if (e.target.name !== "filter") {
+      return;
+    }
+    const toEnable = e.target.getAttribute("data-enables-field");
+
+    const toggledFields = document.querySelector(
+      `.toggled-fields:has(#${toEnable})`,
+    );
+    for (let field of toggledFields.childNodes) {
+      if (field.querySelector(`#${toEnable}`) !== null) {
+        field.querySelector("fieldset").removeAttribute("disabled");
+        field.style.display = "block";
+      } else {
+        field.style.display = "none";
+        field.querySelector("fieldset").setAttribute("disabled", "");
+      }
+    }
+  });
   form.addEventListener("submit", download);
 }
 

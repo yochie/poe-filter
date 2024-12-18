@@ -57,15 +57,38 @@ h3 {
   display: flex;
 }
 
+.section-fields {
+  padding: 20px;
+}
+
 .section-fields fieldset {
   display: flex;
+  gap: 20px;
   border: none;
 }
-.section-fields legend {
-  display: inline;
+
+.section-fields .filter-type-field legend {
+  display: none;
 }
 
 .options-container {
   display: inline-flex;
+  gap: 10px;
+}
+
+.options-container label {
+  margin-right: 20px;
+}
+
+.level-filter {
+  display: flex;
   gap: 20px;
+}
+
+.level-filter input {
+  width: 5ch;
+}
+
+.toggled-fields > * {
+  display: none;
 }
