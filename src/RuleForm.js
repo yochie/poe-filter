@@ -41,20 +41,25 @@ function generateFields(rules) {
   }
 }
 
-function createSectionHeader(itemClass, section) {
+function createSectionHeader(itemClass, section, sectionID) {
   const sectionHeader = document.createElement("div");
   sectionHeader.classList.add("item-class-section-header");
 
+  const checkboxID = `${sectionID}-enabled`;
   const sectionEnabledCheckbox = document.createElement("input");
+  sectionEnabledCheckbox.setAttribute("id", checkboxID);
   sectionEnabledCheckbox.type = "checkbox";
   sectionEnabledCheckbox.addEventListener("change", () =>
     enableSection(section, sectionEnabledCheckbox.checked),
   );
   sectionHeader.appendChild(sectionEnabledCheckbox);
 
+  const label = document.createElement("label");
+  label.setAttribute("for", checkboxID);
   const title = document.createElement("h3");
   title.textContent = itemClass.name;
-  sectionHeader.appendChild(title);
+  label.appendChild(title);
+  sectionHeader.appendChild(label);
 
   section.appendChild(sectionHeader);
 }
@@ -168,7 +173,7 @@ function createItemClassSection(itemClass) {
   const section = document.createElement("div");
   const sectionID = itemClass.id;
 
-  createSectionHeader(itemClass, section);
+  createSectionHeader(itemClass, section, sectionID);
   const sectionFields = document.createElement("div");
   sectionFields.classList.add("section-fields");
 
