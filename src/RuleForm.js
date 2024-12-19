@@ -17,25 +17,40 @@ function download() {
 function parse() {}
 
 function generateFields(rules) {
-  const categories = new Map();
-  const itemClasses = new Map();
+  const formCategories = new Map();
   for (let rule of rules) {
     const { forItemClass: ruleItemClass } = rule;
     if (ruleItemClass === null) {
       continue;
     }
-    const ruleCategory = ruleItemClass.category;
-    if (!categories.has(ruleCategory)) {
-      const newCategory = createCategorySection(ruleCategory);
-      categories.set(ruleCategory, newCategory);
+    const mainCategoryName = ruleItemClass.category;
+
+    if (!formCategories.has(mainCategoryName)) {
+      const newCategory = createCategorySection(mainCategoryName);
+      formCategories.set(mainCategoryName, newCategory);
       form.appendChild(newCategory);
     }
-    if (!itemClasses.has(ruleItemClass)) {
-      const newSection = createItemClassSection(ruleItemClass);
-      itemClasses.set(ruleItemClass, newSection);
-      categories.get(ruleCategory).appendChild(newSection);
+
+    //add subcategory if applicable
+    const goesInSubCategory = Object.hasOwn(ruleItemClass, "subCategory");
+    if (goesInSubCategory) {
+      const subCategoryName = ruleItemClass.subCategory;
+      if (!formCategories.has(subCategoryName)) {
+        const newSubCategory = createSubCategorySection(subCategoryName);
+        formCategories.set(subCategoryName, newSubCategory);
+        formCategories.get(mainCategoryName).appendChild(newSubCategory);
+      }
     }
-    setSectionEnabled(itemClasses.get(ruleItemClass), false);
+
+    //add rule to appropriate category/subcategory
+    const newSection = createItemClassSection(ruleItemClass);
+    if (goesInSubCategory) {
+      formCategories.get(ruleItemClass.subCategory).appendChild(newSection);
+    } else {
+      formCategories.get(mainCategoryName).appendChild(newSection);
+    }
+
+    setSectionEnabled(newSection, false);
   }
 
   const submitButton = document.createElement("button");
@@ -80,7 +95,7 @@ function createFilterTypeOptions(
   const input = document.createElement("input");
   const fieldID = `${optionID}-${sectionID}`;
   input.type = "radio";
-  input.name = "filter";
+  input.name = `filter-${sectionID}`;
   input.value = optionID;
   input.id = fieldID;
   input.setAttribute("data-enables-field", enablesID);
@@ -221,6 +236,16 @@ function createCategorySection(name) {
   return newCategory;
 }
 
+function createSubCategorySection(name) {
+  const newCategory = document.createElement("div");
+  newCategory.classList.add("rule-sub-category");
+
+  const title = document.createElement("h3");
+  title.textContent = name;
+  newCategory.appendChild(title);
+  return newCategory;
+}
+
 function init() {
   generateFields(defaultRules);
 
@@ -228,7 +253,7 @@ function init() {
   load(defaultRules);
 
   form.addEventListener("change", (e) => {
-    if (e.target.name !== "filter") {
+    if (e.target.getAttribute("data-enables-field") === null) {
       return;
     }
     const toEnable = e.target.getAttribute("data-enables-field");

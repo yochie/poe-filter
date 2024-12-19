@@ -1,12 +1,10 @@
-import getItemClass from "./ItemClass.js";
+import { getItemClassByName, getItemClassInSubCategory } from "./ItemClass.js";
 import { filterFactory } from "./Filter.js";
 class Rule {
-  category;
   forItemClass;
   filter;
 
-  constructor(category, forItemClass, filter) {
-    this.category = category;
+  constructor(forItemClass, filter) {
     this.forItemClass = forItemClass;
     this.filter = filter;
   }
@@ -27,24 +25,18 @@ const defaultRules = [];
 
 defaultRules.push(
   new Rule(
-    "Weapons",
-    getItemClass("Two Hand Maces"),
+    getItemClassByName("Two Hand Maces"),
     filterFactory.createDropLevelFilter(67),
   ),
 );
 
 defaultRules.push(
-  new Rule(
-    "Weapons",
-    getItemClass("Bows"),
-    filterFactory.createDropLevelFilter(72),
-  ),
+  new Rule(getItemClassByName("Bows"), filterFactory.createDropLevelFilter(72)),
 );
 
 defaultRules.push(
   new Rule(
-    "Weapons",
-    getItemClass("Crossbows"),
+    getItemClassByName("Crossbows"),
     filterFactory.createBaseTypeFilter([
       "Expert Bombard Crossbow",
       "Expert Dyad Crossbow",
@@ -54,8 +46,7 @@ defaultRules.push(
 
 defaultRules.push(
   new Rule(
-    "Defences",
-    getItemClass("Helmets", {
+    getItemClassInSubCategory("Helmets", {
       hasArmour: true,
       hasEvasion: false,
       hasES: false,
@@ -66,11 +57,10 @@ defaultRules.push(
 
 defaultRules.push(
   new Rule(
-    "Defences",
-    getItemClass("Helmets", {
-      hasES: true,
-      hasArmour: false,
-      hasEvasion: false,
+    getItemClassInSubCategory("Helmets", {
+      hasArmour: true,
+      hasEvasion: true,
+      hasES: false,
     }),
     filterFactory.createDropLevelFilter(67),
   ),

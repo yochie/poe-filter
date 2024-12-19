@@ -12,17 +12,19 @@ class ItemClass {
     this.baseTypes = baseTypes;
     this.advancedLevel = advancedLevel;
     this.expertLevel = expertLevel;
-    this.id = name.replace(/\s/g, "-").toLowerCase();
+    this.id = name.replace(/\s/g, "-").replace(/\//g, "-").toLowerCase();
   }
 }
 
 class DefenseItemClass extends ItemClass {
+  subCategory;
   hasArmour;
   hasEvasion;
   hasES;
 
   constructor(
     category,
+    subCategory,
     name,
     baseTypes,
     advancedLevel,
@@ -32,6 +34,7 @@ class DefenseItemClass extends ItemClass {
     hasES,
   ) {
     super(category, name, baseTypes, advancedLevel, expertLevel);
+    this.subCategory = subCategory;
     this.hasArmour = hasArmour;
     this.hasEvasion = hasEvasion;
     this.hasES = hasES;
@@ -81,6 +84,7 @@ itemClasses.push(
   new DefenseItemClass(
     "Defences",
     "Helmets",
+    "Armor Helmets",
     [
       "Expert Soldier Greathelm",
       "Expert Spired Greathelm",
@@ -98,6 +102,7 @@ itemClasses.push(
   new DefenseItemClass(
     "Defences",
     "Helmets",
+    "Armor/Evasion Helmets",
     ["Expert Guarded Helm", "Expert Cowled Helm", "Expert Shielded Helm"],
     45,
     65,
@@ -107,28 +112,29 @@ itemClasses.push(
   ),
 );
 
-function getItemClass(name, withDefenceType = null) {
+function getItemClassByName(name) {
   for (let itemClass of itemClasses) {
-    if (itemClass.name == name) {
-      if (withDefenceType == null) {
-        return itemClass;
-      }
-
-      if (withDefenceType.hasArmour !== itemClass.hasArmour) {
-        continue;
-      }
-      if (withDefenceType.hasEvasion !== itemClass.hasEvasion) {
-        continue;
-      }
-      if (withDefenceType.hasES !== itemClass.hasES) {
-        continue;
-      }
-
+    if (itemClass.name === name) {
       return itemClass;
     }
   }
 
   return null;
 }
+function getItemClassInSubCategory(subCategory, withDefenceType) {
+  for (let itemClass of itemClasses) {
+    if (withDefenceType.hasArmour !== itemClass.hasArmour) {
+      continue;
+    }
+    if (withDefenceType.hasEvasion !== itemClass.hasEvasion) {
+      continue;
+    }
+    if (withDefenceType.hasES !== itemClass.hasES) {
+      continue;
+    }
+    return itemClass;
+  }
+  return null;
+}
 
-export default getItemClass;
+export { getItemClassByName, getItemClassInSubCategory };
