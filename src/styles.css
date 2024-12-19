@@ -76,7 +76,7 @@ h3 {
   gap: 10px;
 }
 
-.options-container label {
+.section-fields fieldset label {
   margin-right: 20px;
 }
 
@@ -90,5 +90,13 @@ h3 {
 }
 
 .toggled-fields > * {
+  display: none;
+}
+
+fieldset.base-filter {
+  gap: 10px;
+}
+
+.base-filter legend {
   display: none;
 }

@@ -3,12 +3,14 @@ class ItemClass {
   baseTypes;
   advancedLevel;
   expertLevel;
+  id;
 
   constructor(name, baseTypes, advancedLevel, expertLevel) {
     this.name = name;
     this.baseTypes = baseTypes;
     this.advancedLevel = advancedLevel;
     this.expertLevel = expertLevel;
+    this.id = name.replace(/\s/g, "-").toLowerCase();
   }
 }
 

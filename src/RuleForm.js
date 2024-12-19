@@ -81,50 +81,60 @@ function createFilterTypeOptions(
   fieldset.appendChild(label);
 }
 
-function createLevelField(container, fieldID) {
+function createLevelField(container, fieldsetID) {
   const wrapper = document.createElement("div");
   const fieldset = document.createElement("fieldset");
+  fieldset.setAttribute("id", fieldsetID);
   fieldset.classList.add("level-filter");
 
-  const levelFilterID = fieldID;
+  const fieldID = `${fieldsetID}-field`;
   const label = document.createElement("label");
   label.textContent = "Cutoff level";
-  label.setAttribute("for", levelFilterID);
-  fieldset.appendChild(label);
-
-  const input = document.createElement("input");
-  input.type = "number";
-  input.setAttribute("id", levelFilterID);
-  fieldset.appendChild(input);
-  wrapper.appendChild(fieldset);
-  container.appendChild(wrapper);
-}
-
-function createBaseField(container, fieldID) {
-  const wrapper = document.createElement("div");
-  const fieldset = document.createElement("fieldset");
-  fieldset.classList.add("base-filter");
-
-  const label = document.createElement("label");
-  label.textContent = "Base Types";
   label.setAttribute("for", fieldID);
   fieldset.appendChild(label);
 
   const input = document.createElement("input");
-  input.type = "text";
+  input.type = "number";
   input.setAttribute("id", fieldID);
   fieldset.appendChild(input);
   wrapper.appendChild(fieldset);
   container.appendChild(wrapper);
 }
 
-//todo : currently hardcoded for field types, not respecting open-closed
-// need to find solution that doesnt require defining everything inside item class definition
+function createBaseField(container, fieldsetID, itemClass) {
+  const wrapper = document.createElement("div");
+  const fieldset = document.createElement("fieldset");
+  fieldset.setAttribute("id", fieldsetID);
+  fieldset.classList.add("base-filter");
+
+  const legend = document.createElement("legend");
+  legend.textContent = "Base Types";
+  fieldset.appendChild(legend);
+
+  const fieldName = fieldsetID;
+
+  for (let baseType of itemClass.baseTypes) {
+    const baseTypeAsID = baseType.replace(/\s/g, "-").toLowerCase();
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.setAttribute("id", baseTypeAsID);
+    input.setAttribute("name", fieldName);
+    fieldset.appendChild(input);
+
+    const label = document.createElement("label");
+    label.setAttribute("for", baseTypeAsID);
+    label.textContent = baseType;
+    fieldset.appendChild(label);
+  }
+  wrapper.appendChild(fieldset);
+  container.appendChild(wrapper);
+}
+
 function createFilterTypeFieldset(
   container,
   sectionID,
-  levelFieldID,
-  baseFieldID,
+  levelFieldsetID,
+  baseFieldsetID,
 ) {
   const filterTypeFieldset = document.createElement("fieldset");
   filterTypeFieldset.classList.add("filter-type-field");
@@ -140,14 +150,14 @@ function createFilterTypeFieldset(
     sectionID,
     "level",
     "Drop Level",
-    levelFieldID,
+    levelFieldsetID,
   );
   createFilterTypeOptions(
     optionsContainer,
     sectionID,
     "base-type",
     "Base Type",
-    baseFieldID,
+    baseFieldsetID,
   );
   filterTypeFieldset.appendChild(optionsContainer);
 
@@ -156,7 +166,7 @@ function createFilterTypeFieldset(
 
 function createItemClassSection(itemClass) {
   const section = document.createElement("div");
-  const sectionID = itemClass.name.replace(/\s/g, "-");
+  const sectionID = itemClass.id;
 
   createSectionHeader(itemClass, section);
   const sectionFields = document.createElement("div");
@@ -166,14 +176,19 @@ function createItemClassSection(itemClass) {
   //should find way to respect open closed principle
   //not sure how to go about this without bloating the rule class
   //some pattern has to apply...
-  const levelFieldID = `level-cutoff-${sectionID}`;
-  const baseFieldID = `bases-${sectionID}`;
-  createFilterTypeFieldset(sectionFields, sectionID, levelFieldID, baseFieldID);
+  const levelFieldsetID = `level-cutoff-${sectionID}`;
+  const baseFieldsetID = `bases-${sectionID}`;
+  createFilterTypeFieldset(
+    sectionFields,
+    sectionID,
+    levelFieldsetID,
+    baseFieldsetID,
+  );
 
   const toggledFields = document.createElement("div");
   toggledFields.classList.add("toggled-fields");
-  createLevelField(toggledFields, levelFieldID);
-  createBaseField(toggledFields, baseFieldID);
+  createLevelField(toggledFields, levelFieldsetID);
+  createBaseField(toggledFields, baseFieldsetID, itemClass);
   sectionFields.appendChild(toggledFields);
   section.appendChild(sectionFields);
 
@@ -210,13 +225,14 @@ function init() {
     const toggledFields = document.querySelector(
       `.toggled-fields:has(#${toEnable})`,
     );
-    for (let field of toggledFields.childNodes) {
-      if (field.querySelector(`#${toEnable}`) !== null) {
-        field.querySelector("fieldset").removeAttribute("disabled");
-        field.style.display = "block";
+    for (let toggled of toggledFields.childNodes) {
+      const fieldset = toggled.querySelector("fieldset");
+      if (fieldset.getAttribute("id") === toEnable) {
+        toggled.removeAttribute("disabled");
+        toggled.style.display = "block";
       } else {
-        field.style.display = "none";
-        field.querySelector("fieldset").setAttribute("disabled", "");
+        toggled.style.display = "none";
+        toggled.setAttribute("disabled", "");
       }
     }
   });
