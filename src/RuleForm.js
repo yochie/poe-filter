@@ -1,12 +1,13 @@
 import { Rule, defaultRules } from "./Rule.js";
 import { printRules } from "./RulePrinter.js";
 const form = document.querySelector("form");
+let rules = defaultRules;
 
 function load(rules) {}
 
 function download() {
-  const rules = parse();
-  const fileContent = print(rules);
+  // rules = parse();
+  const fileContent = printRules(rules);
 
   //todo : output file content to element that is clicked
   // see https://stackoverflow.com/questions/3665115/how-to-create-a-file-in-memory-for-user-to-download-but-not-through-server
@@ -19,14 +20,11 @@ function generateFields(rules) {
   const categories = new Map();
   const itemClasses = new Map();
   for (let rule of rules) {
-    const {
-      category: ruleCategory,
-      forItemClass: ruleItemClass,
-      filter: ruleFilter,
-    } = rule;
+    const { forItemClass: ruleItemClass } = rule;
     if (ruleItemClass === null) {
       continue;
     }
+    const ruleCategory = ruleItemClass.category;
     if (!categories.has(ruleCategory)) {
       const newCategory = createCategorySection(ruleCategory);
       categories.set(ruleCategory, newCategory);
@@ -37,8 +35,16 @@ function generateFields(rules) {
       itemClasses.set(ruleItemClass, newSection);
       categories.get(ruleCategory).appendChild(newSection);
     }
-    enableSection(itemClasses.get(ruleItemClass), false);
+    setSectionEnabled(itemClasses.get(ruleItemClass), false);
   }
+
+  const submitButton = document.createElement("button");
+  submitButton.type = "button";
+  submitButton.classList.add("submit-button");
+  submitButton.textContent = "Generate";
+
+  submitButton.addEventListener("click", download);
+  form.appendChild(submitButton);
 }
 
 function createSectionHeader(itemClass, section, sectionID) {
@@ -50,7 +56,7 @@ function createSectionHeader(itemClass, section, sectionID) {
   sectionEnabledCheckbox.setAttribute("id", checkboxID);
   sectionEnabledCheckbox.type = "checkbox";
   sectionEnabledCheckbox.addEventListener("change", () =>
-    enableSection(section, sectionEnabledCheckbox.checked),
+    setSectionEnabled(section, sectionEnabledCheckbox.checked),
   );
   sectionHeader.appendChild(sectionEnabledCheckbox);
 
@@ -200,7 +206,7 @@ function createItemClassSection(itemClass) {
   return section;
 }
 
-function enableSection(section, state) {
+function setSectionEnabled(section, state) {
   const sectionContent = section.querySelector(".section-fields");
   sectionContent.style.display = state ? "block" : "none";
 }
@@ -241,7 +247,6 @@ function init() {
       }
     }
   });
-  form.addEventListener("submit", download);
 }
 
 export { init };

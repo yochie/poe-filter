@@ -1,11 +1,13 @@
 class ItemClass {
+  category;
   name;
   baseTypes;
   advancedLevel;
   expertLevel;
   id;
 
-  constructor(name, baseTypes, advancedLevel, expertLevel) {
+  constructor(category, name, baseTypes, advancedLevel, expertLevel) {
+    this.category = category;
     this.name = name;
     this.baseTypes = baseTypes;
     this.advancedLevel = advancedLevel;
@@ -20,6 +22,7 @@ class DefenseItemClass extends ItemClass {
   hasES;
 
   constructor(
+    category,
     name,
     baseTypes,
     advancedLevel,
@@ -28,7 +31,7 @@ class DefenseItemClass extends ItemClass {
     hasEvasion,
     hasES,
   ) {
-    super(name, baseTypes, advancedLevel, expertLevel);
+    super(category, name, baseTypes, advancedLevel, expertLevel);
     this.hasArmour = hasArmour;
     this.hasEvasion = hasEvasion;
     this.hasES = hasES;
@@ -40,6 +43,7 @@ const itemClasses = [];
 
 itemClasses.push(
   new ItemClass(
+    "Weapons",
     "Crossbows",
     [
       "Expert Sturdy Crossbow",
@@ -56,6 +60,7 @@ itemClasses.push(
 
 itemClasses.push(
   new ItemClass(
+    "Weapons",
     "Two Hand Maces",
     [
       "Expert Forge Maul",
@@ -74,6 +79,7 @@ itemClasses.push(
 // "Golden Visage",
 itemClasses.push(
   new DefenseItemClass(
+    "Defences",
     "Helmets",
     [
       "Expert Soldier Greathelm",
@@ -90,6 +96,7 @@ itemClasses.push(
 
 itemClasses.push(
   new DefenseItemClass(
+    "Defences",
     "Helmets",
     ["Expert Guarded Helm", "Expert Cowled Helm", "Expert Shielded Helm"],
     45,
