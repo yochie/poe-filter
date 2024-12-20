@@ -28,7 +28,7 @@ function generateFields(rules) {
     const mainCategoryName = ruleItemClass.category;
 
     if (!formCategories.has(mainCategoryName)) {
-      const newCategory = createCategorySection(mainCategoryName);
+      const newCategory = createCategory(mainCategoryName);
       formCategories.set(mainCategoryName, newCategory);
       form.appendChild(newCategory);
     }
@@ -38,21 +38,21 @@ function generateFields(rules) {
     if (goesInSubCategory) {
       const subCategoryName = ruleItemClass.subCategory;
       if (!formCategories.has(subCategoryName)) {
-        const newSubCategory = createSubCategorySection(subCategoryName);
+        const newSubCategory = createSubCategory(subCategoryName);
         formCategories.set(subCategoryName, newSubCategory);
         formCategories.get(mainCategoryName).appendChild(newSubCategory);
       }
     }
 
     //add rule to appropriate category/subcategory
-    const newSection = createItemClassSection(ruleItemClass);
+    const newSection = createItemClassRule(ruleItemClass);
     if (goesInSubCategory) {
       formCategories.get(ruleItemClass.subCategory).appendChild(newSection);
     } else {
       formCategories.get(mainCategoryName).appendChild(newSection);
     }
 
-    setSectionEnabled(newSection, false);
+    setRuleEnabled(newSection, false);
   }
 
   const submitButton = document.createElement("button");
@@ -85,40 +85,40 @@ function generateFields(rules) {
   });
 }
 
-function createSectionHeader(itemClass, section, sectionID) {
-  const sectionHeader = document.createElement("div");
-  sectionHeader.classList.add("item-class-section-header");
+function createRuleHeader(itemClass, rule, ruleID) {
+  const ruleHeader = document.createElement("div");
+  ruleHeader.classList.add("rule-header");
 
-  const checkboxID = `${sectionID}-enabled`;
-  const sectionEnabledCheckbox = document.createElement("input");
-  sectionEnabledCheckbox.setAttribute("id", checkboxID);
-  sectionEnabledCheckbox.type = "checkbox";
-  sectionEnabledCheckbox.addEventListener("change", () =>
-    setSectionEnabled(section, sectionEnabledCheckbox.checked),
+  const checkboxID = `${ruleID}-enabled`;
+  const ruleEnabledCheckbox = document.createElement("input");
+  ruleEnabledCheckbox.setAttribute("id", checkboxID);
+  ruleEnabledCheckbox.type = "checkbox";
+  ruleEnabledCheckbox.addEventListener("change", () =>
+    setRuleEnabled(rule, ruleEnabledCheckbox.checked),
   );
-  sectionHeader.appendChild(sectionEnabledCheckbox);
+  ruleHeader.appendChild(ruleEnabledCheckbox);
 
   const label = document.createElement("label");
   label.setAttribute("for", checkboxID);
   const title = document.createElement("h3");
   title.textContent = itemClass.name;
   label.appendChild(title);
-  sectionHeader.appendChild(label);
+  ruleHeader.appendChild(label);
 
-  section.appendChild(sectionHeader);
+  rule.appendChild(ruleHeader);
 }
 
-function createFilterTypeOptions(
+function createFilterTypeOption(
   fieldset,
-  sectionID,
+  ruleID,
   optionID,
   optionLabel,
   enablesID,
 ) {
   const input = document.createElement("input");
-  const fieldID = `${optionID}-${sectionID}`;
+  const fieldID = `${optionID}-${ruleID}`;
   input.type = "radio";
-  input.name = `filter-${sectionID}`;
+  input.name = `filter-${ruleID}`;
   input.value = optionID;
   input.id = fieldID;
   input.setAttribute("data-enables-field", enablesID);
@@ -185,7 +185,7 @@ function createBaseField(container, fieldsetID, itemClass) {
 
 function createFilterTypeFieldset(
   container,
-  sectionID,
+  ruleID,
   levelFieldsetID,
   baseFieldsetID,
 ) {
@@ -198,16 +198,16 @@ function createFilterTypeFieldset(
 
   const optionsContainer = document.createElement("div");
   optionsContainer.classList.add("options-container");
-  createFilterTypeOptions(
+  createFilterTypeOption(
     optionsContainer,
-    sectionID,
+    ruleID,
     "level",
     "Drop Level",
     levelFieldsetID,
   );
-  createFilterTypeOptions(
+  createFilterTypeOption(
     optionsContainer,
-    sectionID,
+    ruleID,
     "base-type",
     "Base Type",
     baseFieldsetID,
@@ -217,43 +217,39 @@ function createFilterTypeFieldset(
   container.appendChild(filterTypeFieldset);
 }
 
-function createItemClassSection(itemClass) {
-  const section = document.createElement("div");
-  const sectionID = itemClass.id;
+function createItemClassRule(itemClass) {
+  const rule = document.createElement("div");
+  rule.classList.add("rule");
+  const ruleID = itemClass.id;
 
-  createSectionHeader(itemClass, section, sectionID);
-  const sectionFields = document.createElement("div");
-  sectionFields.classList.add("section-fields");
+  createRuleHeader(itemClass, rule, ruleID);
+  const ruleFields = document.createElement("div");
+  ruleFields.classList.add("rule-fields");
 
   //Hardcoded fields here
   //should find way to respect open closed principle
   //not sure how to go about this without bloating the rule class
   //some pattern has to apply...
-  const levelFieldsetID = `level-cutoff-${sectionID}`;
-  const baseFieldsetID = `bases-${sectionID}`;
-  createFilterTypeFieldset(
-    sectionFields,
-    sectionID,
-    levelFieldsetID,
-    baseFieldsetID,
-  );
+  const levelFieldsetID = `level-cutoff-${ruleID}`;
+  const baseFieldsetID = `bases-${ruleID}`;
+  createFilterTypeFieldset(ruleFields, ruleID, levelFieldsetID, baseFieldsetID);
 
   const toggledFields = document.createElement("div");
   toggledFields.classList.add("toggled-fields");
   createLevelField(toggledFields, levelFieldsetID);
   createBaseField(toggledFields, baseFieldsetID, itemClass);
-  sectionFields.appendChild(toggledFields);
-  section.appendChild(sectionFields);
+  ruleFields.appendChild(toggledFields);
+  rule.appendChild(ruleFields);
 
-  return section;
+  return rule;
 }
 
-function setSectionEnabled(section, state) {
-  const sectionContent = section.querySelector(".section-fields");
-  sectionContent.style.display = state ? "block" : "none";
+function setRuleEnabled(section, state) {
+  const ruleContent = section.querySelector(".rule-fields");
+  ruleContent.style.display = state ? "block" : "none";
 }
 
-function createCategorySection(name) {
+function createCategory(name) {
   const newCategory = document.createElement("div");
   newCategory.classList.add("rule-category");
 
@@ -263,7 +259,7 @@ function createCategorySection(name) {
   return newCategory;
 }
 
-function createSubCategorySection(name) {
+function createSubCategory(name) {
   const newCategory = document.createElement("div");
   newCategory.classList.add("rule-sub-category");
 

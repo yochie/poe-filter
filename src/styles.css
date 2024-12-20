@@ -53,21 +53,21 @@ h3 {
   margin-left: 20px;
 }
 
-.item-class-section-header {
+.rule-header {
   display: flex;
 }
 
-.section-fields {
+.rule-fields {
   padding: 20px;
 }
 
-.section-fields fieldset {
+.rule-fields fieldset {
   display: flex;
   gap: 20px;
   border: none;
 }
 
-.section-fields .filter-type-field legend {
+.rule-fields .filter-type-field legend {
   display: none;
 }
 
@@ -76,7 +76,7 @@ h3 {
   gap: 10px;
 }
 
-.section-fields fieldset label {
+.rule-fields fieldset label {
   margin-right: 20px;
 }
 
