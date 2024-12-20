@@ -84,7 +84,7 @@ itemClasses.push(
   new DefenseItemClass(
     "Defences",
     "Helmets",
-    "Armor Helmets",
+    "Armor",
     [
       "Expert Soldier Greathelm",
       "Expert Spired Greathelm",
@@ -102,7 +102,7 @@ itemClasses.push(
   new DefenseItemClass(
     "Defences",
     "Helmets",
-    "Armor/Evasion Helmets",
+    "Armor/Evasion",
     ["Expert Guarded Helm", "Expert Cowled Helm", "Expert Shielded Helm"],
     45,
     65,
