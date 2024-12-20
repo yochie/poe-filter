@@ -100,7 +100,7 @@ function createRuleHeader(itemClass, rule, ruleID) {
 
   const label = document.createElement("label");
   label.setAttribute("for", checkboxID);
-  const title = document.createElement("h3");
+  const title = document.createElement("h4");
   title.textContent = itemClass.name;
   label.appendChild(title);
   ruleHeader.appendChild(label);

@@ -48,13 +48,25 @@ h2 {
 }
 
 h3 {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: bold;
-  margin-left: 20px;
+}
+
+h4 {
+  font-size: 1.1rem;
 }
 
 .rule-header {
   display: flex;
+  gap: 20px;
+}
+
+.rule-sub-category {
+  margin-left: 30px;
+}
+
+.rule {
+  margin-left: 30px;
 }
 
 .rule-fields {
@@ -71,7 +83,7 @@ h3 {
   display: none;
 }
 
-.options-container {
+.rule-fields .filter-type-field .options-container {
   display: inline-flex;
   gap: 10px;
 }
@@ -80,25 +92,24 @@ h3 {
   margin-right: 20px;
 }
 
-.level-filter {
-  display: flex;
-  gap: 20px;
-}
-
-.level-filter input {
-  width: 5ch;
-}
-
 .toggled-fields > * {
   display: none;
 }
 
-fieldset.base-filter {
+.rule-fields .base-filter {
   gap: 10px;
 }
 
-.base-filter legend {
+.rule-fields .base-filter legend {
   display: none;
+}
+
+.rule-fields .level-filter {
+  gap: 10px;
+}
+
+.rule-fields .level-filter input {
+  width: 5ch;
 }
 
 button.submit-button {
