@@ -62,6 +62,27 @@ function generateFields(rules) {
 
   submitButton.addEventListener("click", download);
   form.appendChild(submitButton);
+
+  //register handler for filter type toggling
+  form.addEventListener("change", (e) => {
+    const toEnable = e.target.getAttribute("data-enables-field");
+    if (toEnable === null) {
+      return;
+    }
+
+    const toggledFields = document.querySelector(
+      `.toggled-fields:has(#${toEnable})`,
+    );
+    for (let toggled of toggledFields.childNodes) {
+      if (toggled.getAttribute("id") === toEnable) {
+        toggled.removeAttribute("disabled");
+        toggled.style.display = "block";
+      } else {
+        toggled.style.display = "none";
+        toggled.setAttribute("disabled", "");
+      }
+    }
+  });
 }
 
 function createSectionHeader(itemClass, section, sectionID) {
@@ -110,9 +131,11 @@ function createFilterTypeOptions(
 }
 
 function createLevelField(container, fieldsetID) {
+  //used for toggling field from filter type
   const wrapper = document.createElement("div");
+  wrapper.setAttribute("id", fieldsetID);
+
   const fieldset = document.createElement("fieldset");
-  fieldset.setAttribute("id", fieldsetID);
   fieldset.classList.add("level-filter");
 
   const fieldID = `${fieldsetID}-field`;
@@ -130,9 +153,11 @@ function createLevelField(container, fieldsetID) {
 }
 
 function createBaseField(container, fieldsetID, itemClass) {
+  //used for toggling field from filter type
   const wrapper = document.createElement("div");
+  wrapper.setAttribute("id", fieldsetID);
+
   const fieldset = document.createElement("fieldset");
-  fieldset.setAttribute("id", fieldsetID);
   fieldset.classList.add("base-filter");
 
   const legend = document.createElement("legend");
