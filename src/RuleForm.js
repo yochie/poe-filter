@@ -1,12 +1,14 @@
-import { Rule, defaultRules } from "./Rule.js";
+import { Rule } from "./Rule.js";
 import { printRules } from "./RulePrinter.js";
 const form = document.querySelector("form");
-let rules = defaultRules;
+let defaultRules;
 
 function load(rules) {}
 
 function download() {
+  //todo : parse form
   // rules = parse();
+  const rules = defaultRules;
   const fileContent = printRules(rules);
 
   //todo : output file content to element that is clicked
@@ -246,32 +248,12 @@ function createSubCategorySection(name) {
   return newCategory;
 }
 
-function init() {
-  generateFields(defaultRules);
+function init(rules) {
+  defaultRules = rules;
+  generateFields(rules);
 
-  //todo: load from save if it exists
-  load(defaultRules);
-
-  form.addEventListener("change", (e) => {
-    if (e.target.getAttribute("data-enables-field") === null) {
-      return;
-    }
-    const toEnable = e.target.getAttribute("data-enables-field");
-
-    const toggledFields = document.querySelector(
-      `.toggled-fields:has(#${toEnable})`,
-    );
-    for (let toggled of toggledFields.childNodes) {
-      const fieldset = toggled.querySelector("fieldset");
-      if (fieldset.getAttribute("id") === toEnable) {
-        toggled.removeAttribute("disabled");
-        toggled.style.display = "block";
-      } else {
-        toggled.style.display = "none";
-        toggled.setAttribute("disabled", "");
-      }
-    }
-  });
+  //todo: load from save instead if it exists
+  load(rules);
 }
 
 export { init };
