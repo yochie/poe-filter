@@ -47,12 +47,15 @@ function generateFields(rules) {
     //add rule to appropriate category/subcategory
     const newSection = createItemClassRule(ruleItemClass);
     if (goesInSubCategory) {
-      formCategories.get(ruleItemClass.subCategory).appendChild(newSection);
+      formCategories
+        .get(ruleItemClass.subCategory)
+        .querySelector(".section-content")
+        .appendChild(newSection);
     } else {
       formCategories.get(mainCategoryName).appendChild(newSection);
     }
 
-    setRuleEnabled(newSection, false);
+    setSectionEnabled(newSection.querySelector(".section-content"), false);
   }
 
   const submitButton = document.createElement("button");
@@ -85,21 +88,29 @@ function generateFields(rules) {
   });
 }
 
+function createSectionEnablingCheckbox(section, sectionID) {
+  const checkbox = document.createElement("input");
+  checkbox.setAttribute("id", `${sectionID}-enable`);
+  checkbox.type = "checkbox";
+  checkbox.addEventListener("change", () =>
+    setSectionEnabled(
+      section.querySelector(".section-content"),
+      checkbox.checked,
+    ),
+  );
+
+  return checkbox;
+}
+
 function createRuleHeader(itemClass, rule, ruleID) {
   const ruleHeader = document.createElement("div");
   ruleHeader.classList.add("rule-header");
 
-  const checkboxID = `${ruleID}-enabled`;
-  const ruleEnabledCheckbox = document.createElement("input");
-  ruleEnabledCheckbox.setAttribute("id", checkboxID);
-  ruleEnabledCheckbox.type = "checkbox";
-  ruleEnabledCheckbox.addEventListener("change", () =>
-    setRuleEnabled(rule, ruleEnabledCheckbox.checked),
-  );
-  ruleHeader.appendChild(ruleEnabledCheckbox);
+  const enablingCheckbox = createSectionEnablingCheckbox(rule, ruleID);
+  ruleHeader.appendChild(enablingCheckbox);
 
   const label = document.createElement("label");
-  label.setAttribute("for", checkboxID);
+  label.setAttribute("for", enablingCheckbox.getAttribute("id"));
   const title = document.createElement("h4");
   title.textContent = itemClass.name;
   label.appendChild(title);
@@ -225,6 +236,7 @@ function createItemClassRule(itemClass) {
   createRuleHeader(itemClass, rule, ruleID);
   const ruleFields = document.createElement("div");
   ruleFields.classList.add("rule-fields");
+  ruleFields.classList.add("section-content");
 
   //Hardcoded fields here
   //should find way to respect open closed principle
@@ -244,9 +256,8 @@ function createItemClassRule(itemClass) {
   return rule;
 }
 
-function setRuleEnabled(section, state) {
-  const ruleContent = section.querySelector(".rule-fields");
-  ruleContent.style.display = state ? "block" : "none";
+function setSectionEnabled(sectionContent, state) {
+  sectionContent.style.display = state ? "block" : "none";
 }
 
 function createCategory(name) {
@@ -263,9 +274,29 @@ function createSubCategory(name) {
   const newCategory = document.createElement("div");
   newCategory.classList.add("rule-sub-category");
 
+  const header = document.createElement("div");
+  header.classList.add("sub-category-header");
+
+  //add checkbox
+  const checkbox = createSectionEnablingCheckbox(newCategory, name);
+  header.appendChild(checkbox);
+
+  const label = document.createElement("label");
+  label.setAttribute("for", checkbox.getAttribute("id"));
   const title = document.createElement("h3");
   title.textContent = name;
-  newCategory.appendChild(title);
+  label.appendChild(title);
+  header.appendChild(label);
+
+  newCategory.appendChild(header);
+
+  const content = document.createElement("div");
+  content.classList.add("section-content");
+  content.classList.add("sub-category-rules");
+  newCategory.appendChild(content);
+
+  setSectionEnabled(content, false);
+
   return newCategory;
 }
 

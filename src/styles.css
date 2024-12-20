@@ -56,6 +56,11 @@ h4 {
   font-size: 1.1rem;
 }
 
+.sub-category-header {
+  display: flex;
+  gap: 20px;
+}
+
 .rule-header {
   display: flex;
   gap: 20px;
